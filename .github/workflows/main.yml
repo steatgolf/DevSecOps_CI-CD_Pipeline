@@ -67,7 +67,10 @@ jobs:
             # be deployed to ECS.
             # docker build -t fastapi -f fastapi/Dockerfile fastapi/
 
-            docker build -t $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG . -f Dockerfile
+
+            docker build -t fastapi .
+            docker tag fastapi:latest $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+            # docker build -t $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG . -f Dockerfile
             docker push $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
             echo "image=$ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
