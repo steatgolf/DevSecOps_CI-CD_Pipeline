@@ -12,14 +12,14 @@ def test_read_root():
     assert response.status_code == 200
     
     # Assert the returned JSON is correct
-    assert response.json() == {"message": "Hello, World!"}
+    assert response.json() == {"FastApi Web Test Version 1"}
 
 def test_greet():
     # Test the /greet/{name} endpoint with a dynamic name
-    response = client.get("/greet/John")
+    response = client.get("/greet/Golf")
     
     # Assert the status code is 200 OK
     assert response.status_code == 200
     
     # Assert the returned JSON is correct
-    assert response.json() == {"message": "Hello, John!"}
+    assert response.json() == {"message": "Hello, Golf!"}
