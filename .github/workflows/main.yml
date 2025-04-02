@@ -43,12 +43,15 @@ jobs:
     # needs: test
     steps:
 
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: ${{ env.AWS_REGION }}
+            aws-region: us-east-1
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -58,7 +61,7 @@ jobs:
         id: build-image
         env:
             ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-            ECR_REPOSITORY: "fastapi"
+            ECR_REPOSITORY: fastapi
             IMAGE_TAG: ${{ github.sha }}
 
         run: |
@@ -66,11 +69,10 @@ jobs:
             # push it to ECR so that it can
             # be deployed to ECS.
             # docker build -t fastapi -f fastapi/Dockerfile fastapi/
+            # docker build -t fastapi .
+            # docker tag fastapi:latest $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
 
-
-            docker build -t fastapi .
-            docker tag fastapi:latest $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
-            # docker build -t $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG . -f Dockerfile
+            docker build -t $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG .
             docker push $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
             echo "image=$ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
