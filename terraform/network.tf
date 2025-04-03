@@ -31,7 +31,9 @@ resource "aws_security_group" "ssh" {
   vpc_id = aws_vpc.main-vpc.id
 
   ingress {
-    cidr_blocks = ["49.228.236.68/32"]
+      # Use "0.0.0.0/0" Allow all IP for testing CI/CD #
+    cidr_blocks = ["0.0.0.0/0"]
+    # cidr_blocks = ["49.228.236.68/32"]
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -50,7 +52,9 @@ resource "aws_security_group" "http" {
   vpc_id = aws_vpc.main-vpc.id
 
   ingress {
-    cidr_blocks = ["49.228.236.68/32"]
+    # Use "0.0.0.0/0" Allow all IP for testing CI/CD #
+    cidr_blocks = ["0.0.0.0/0"]
+    # cidr_blocks = ["49.228.236.68/32"]
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
