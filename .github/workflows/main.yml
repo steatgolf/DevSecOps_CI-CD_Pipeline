@@ -8,7 +8,7 @@ on:
 env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "fastapi"
-  EC2_IP: "34.224.75.232"
+  EC2_IP: "54.160.198.177"
   # ECR_REGISTRY: 
   # ECR_REPOSITORY:
   # IMAGE_TAG:
