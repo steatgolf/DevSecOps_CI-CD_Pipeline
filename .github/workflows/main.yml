@@ -104,9 +104,9 @@ jobs:
       - name: Connect to EC2 & Deploy Docker Image
         run: |
           ssh -o StrictHostKeyChecking=no -i deploy_key.pem ubuntu@${{ env.EC2_IP }} << 'EOF'
-            echo "${{ steps.login-ecr.outputs.docker_credentials }}" | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
+            # echo "${{ steps.login-ecr.outputs.docker_credentials }}" | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
             # echo "${{ steps.login-ecr.outputs.docker_password_941377147642.dkr.ecr.us-east-1.amazonaws.co }}" | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
-            
+            # aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
             sudo docker ps -aq | xargs -r sudo docker stop
             sudo docker ps -aq | xargs -r sudo docker rm 
             sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
