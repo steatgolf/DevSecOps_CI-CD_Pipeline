@@ -10,11 +10,10 @@ export DEBIAN_FRONTEND=noninteractive
 sudo apt-get update && sudo apt-get upgrade -y
 
 # Install awscli
-# sudo apt-get install unzip
-
-# sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-# sudo unzip awscliv2.zip
-# sudo ./aws/install
+sudo apt-get install unzip
+sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+sudo unzip awscliv2.zip
+sudo ./aws/install
 
 # Add Docker's official GPG key:
 sudo apt-get install -y --no-install-recommends ca-certificates curl
