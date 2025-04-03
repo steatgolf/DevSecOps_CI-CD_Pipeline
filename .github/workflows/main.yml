@@ -8,7 +8,7 @@ on:
 env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "fastapi"
-  EC2_IP: "54.160.198.177"
+  EC2_IP: "34.207.152.59"
   # ECR_REGISTRY: 
   # ECR_REPOSITORY:
   # IMAGE_TAG:
@@ -83,14 +83,20 @@ jobs:
       - name: Connect to EC2 & Deploy Docker Image
         run: |
           ssh -o StrictHostKeyChecking=no -i deploy_key.pem ubuntu@${{ env.EC2_IP }} << 'EOF'
-            # echo "${{ steps.login-ecr.outputs.docker_credentials }}" | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
-            # echo "${{ steps.login-ecr.outputs.docker_password_941377147642.dkr.ecr.us-east-1.amazonaws.com }}" | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
+            
+            # Configure AWS Credentials
+            sudo aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+            sudo aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            sudo aws configure set region ${{ env.AWS_REGION }}
+          
+            # login to ECR
             sudo aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
             
-            # echo "${{ steps.login-ecr.outputs.docker_credentials }}" | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
+            # Stop running docker (if any)
             sudo docker ps -aq | xargs -r sudo docker stop
             sudo docker ps -aq | xargs -r sudo docker rm
-            # sudo docker pull ${{ steps.build-image.outputs.image }} 
+
+            #Run new docker image
             sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
           EOF
           

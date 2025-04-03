@@ -3,5 +3,5 @@
 Terraform Create EC2 and ECR
 cd terraform
 terraform plan
-Wait script to install docker in EC2 Ubuntu 24
+Wait script to install docker and awscli in EC2 Ubuntu 24
 
