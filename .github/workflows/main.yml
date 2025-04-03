@@ -83,9 +83,9 @@ jobs:
       - name: Connect to EC2 & Deploy Docker Image
         run: |
           ssh -o StrictHostKeyChecking=no -i deploy_key.pem ubuntu@${{ env.EC2_IP }} 
-          docker ps -aq | xargs docker stop | xargs docker rm
+          sudo docker ps -aq | xargs docker stop | xargs docker rm
           # docker run -d -p 80:8000 ${{ steps.build-image.outputs.GITHUB_OUTPUT }}
-          docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
+          sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
 
 
                # ssh -o StrictHostKeyChecking=no -i deploy_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
