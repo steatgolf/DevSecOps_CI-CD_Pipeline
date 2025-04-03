@@ -31,12 +31,12 @@ resource "aws_security_group" "ssh" {
   vpc_id = aws_vpc.main-vpc.id
 
   ingress {
-      # Use "0.0.0.0/0" Allow all IP for testing CI/CD #
+    # Use "0.0.0.0/0" Allow all IP for testing CI/CD #
     cidr_blocks = ["0.0.0.0/0"]
     # cidr_blocks = ["49.228.236.68/32"]
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
   }
 
   egress {
@@ -55,9 +55,9 @@ resource "aws_security_group" "http" {
     # Use "0.0.0.0/0" Allow all IP for testing CI/CD #
     cidr_blocks = ["0.0.0.0/0"]
     # cidr_blocks = ["49.228.236.68/32"]
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
   }
 
   egress {
@@ -72,4 +72,10 @@ resource "aws_key_pair" "sshkey" {
   key_name   = "aws"
   public_key = file("~/.ssh/aws.pub")
 
+}
+
+resource "aws_eip" "ip1" {
+  domain     = "vpc"
+  instance   = aws_instance.vm1.id
+  # depends_on = [aws_internet_gateway.gateway]
 }
