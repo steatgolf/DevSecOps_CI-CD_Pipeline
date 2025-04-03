@@ -8,7 +8,7 @@ on:
 env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "fastapi"
-  EC2_IP: "54.91.82.98"
+  EC2_IP: "54.236.225.171"
   # ECR_REGISTRY: 
   # ECR_REPOSITORY:
   # IMAGE_TAG:
@@ -104,20 +104,14 @@ jobs:
       - name: Connect to EC2 & Deploy Docker Image
         run: |
           ssh -o StrictHostKeyChecking=no -i deploy_key.pem ubuntu@${{ env.EC2_IP }} << 'EOF'
-            echo "Stopping and removing existing containers (if any)"
-            # sudo docker ps -aq | xargs sudo docker stop | xargs sudo docker rm
+            # echo "${{ steps.login-ecr.outputs.docker_credentials }}" | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
+            echo "${{ steps.login-ecr.outputs.docker_password_941377147642.dkr.ecr.us-east-1.amazonaws.co }}" | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
+            
             sudo docker ps -aq | xargs -r sudo docker stop
             sudo docker ps -aq | xargs -r sudo docker rm 
-      
-            # echo "Pulling new Docker image..."
-            # sudo docker pull ${{ steps.build-image.outputs.image }}
-      
-            echo "Running new Docker container..."
             sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
           EOF
           
-
-
                # ssh -o StrictHostKeyChecking=no -i deploy_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
           #   echo "Logging in to ECR..."
           #   aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
