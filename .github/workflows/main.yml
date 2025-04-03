@@ -58,6 +58,14 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'false'
+
+    # outputs:
+    #   registry: ${{ steps.login-ecr.outputs.registry }}
+    #   docker_username: ${{ steps.login-ecr.outputs.docker_username_941377147642.dkr.ecr.us-east-1.amazonaws.com }}
+    #   # docker_password: ${{ steps.login-ecr.outputs.docker_password_941377147642.dkr.ecr.us-east-1.amazonaws.com }}
+
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
@@ -88,17 +96,18 @@ jobs:
       #     # sudo docker ps -aq | xargs sudo docker stop | xargs sudo docker rm
       #     sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
 
-
+   # echo "Logging in to AWS ECR..."
+          # echo "${{ steps.login-ecr.outputs. }}" | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
+            
+          # 941377147642.dkr.ecr.us-east-1.amazonaws.com/fastapi:e25df322fa4bf5dede4022b94958a7d379788732
+          
       - name: Connect to EC2 & Deploy Docker Image
         run: |
           ssh -o StrictHostKeyChecking=no -i deploy_key.pem ubuntu@${{ env.EC2_IP }} << 'EOF'
-            # echo "Starting Docker service..."
-            # sudo systemctl start docker
-      
             echo "Stopping and removing existing containers (if any)"
-            sudo docker ps -aq | xargs sudo docker stop | xargs sudo docker rm
-            # sudo docker ps -aq | xargs -r sudo docker stop
-            # sudo docker ps -aq | xargs -r sudo docker rm 
+            # sudo docker ps -aq | xargs sudo docker stop | xargs sudo docker rm
+            sudo docker ps -aq | xargs -r sudo docker stop
+            sudo docker ps -aq | xargs -r sudo docker rm 
       
             # echo "Pulling new Docker image..."
             # sudo docker pull ${{ steps.build-image.outputs.image }}
