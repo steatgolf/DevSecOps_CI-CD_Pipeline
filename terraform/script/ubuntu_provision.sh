@@ -9,6 +9,7 @@ export DEBIAN_FRONTEND=noninteractive
 # Update and upgrade the system packages
 sudo apt-get update && sudo apt-get upgrade -y
 
+
 # Add Docker's official GPG key:
 sudo apt-get install -y --no-install-recommends ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
