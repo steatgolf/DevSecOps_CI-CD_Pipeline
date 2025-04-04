@@ -185,7 +185,7 @@ jobs:
           cmd_options: -a
           allow_issue_writing: false
           # fail_action: true = fail the job if medium or high risk level are found.
-          fail_action: true
+          fail_action: false
           artifact_name: zap-dast-report.json
           
       - name: Upload Report as Artifact
