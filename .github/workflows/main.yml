@@ -13,7 +13,7 @@ env:
 jobs:
 
   test:
-    name: Run Fastapi unit test
+    name: fastapi_unit_test
     runs-on: ubuntu-latest
 
     steps:
@@ -82,7 +82,7 @@ jobs:
         path: snyk-sca-report.json         
 
   build:
-    name: Build and deploy to EC2
+    name: build_imagescan_push_deploy_ec2
     runs-on: ubuntu-latest
     # environment: dev
     needs: [test, sonarqube, snyk_sca_scan]
@@ -168,7 +168,7 @@ jobs:
           EOF
           
   DAST:
-    name: Run ZAP DAST Scan to EC2
+    name: zap_dast_scan
     runs-on: ubuntu-latest
     # environment: dev
     needs: build
@@ -183,11 +183,11 @@ jobs:
           target: http://${{ secrets.EC2_IP }}
           rules_file_name: .zap/rules.tsv
           cmd_options: -a
+          allow_issue_writing: false
           # fail_action: true = fail the job if medium or high risk level are found.
           fail_action: true
           artifact_name: zap-dast-report.json
-          allow_issue_writing: true
-
+          
       - name: Upload Report as Artifact
         uses: actions/upload-artifact@v4.6.1
         if: always()
