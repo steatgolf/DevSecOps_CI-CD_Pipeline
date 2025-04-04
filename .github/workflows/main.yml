@@ -184,7 +184,7 @@ jobs:
           rules_file_name: .zap/rules.tsv
           cmd_options: -a
           # fail_action: true = fail if critical issues are found
-          fail_action: false
+          fail_action: true
           artifact_name: zap-dast-report.json
           allow_issue_writing: false
         # continue-on-error: true
