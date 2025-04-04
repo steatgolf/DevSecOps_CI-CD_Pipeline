@@ -12,42 +12,42 @@ env:
 
 jobs:
 
-  # test:
-  #   name: Run FastAPI test
-  #   runs-on: ubuntu-latest
+  test:
+    name: Run FastAPI test
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-  #     - name: Install Make
-  #       run: sudo apt-get update && sudo apt-get install -y make
+      - name: Install Make
+        run: sudo apt-get update && sudo apt-get install -y make
 
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v5.4.0
-  #       with:
-  #         python-version: 3.13
+      - name: Set up Python
+        uses: actions/setup-python@v5.4.0
+        with:
+          python-version: 3.13
 
-  #     - name: Install Dependencies
-  #       run: pip install -r src/requirements.txt 
+      - name: Install Dependencies
+        run: pip install -r src/requirements.txt 
 
-  #     - name: Run Pytest with make
-  #       run: make test
+      - name: Run Pytest with make
+        run: make test
 
-  # sonarqube:
-  #   name: sonarcloud_sast_scan
-  #   runs-on: ubuntu-latest
-  #   steps:
+  sonarqube:
+    name: sonarcloud_sast_scan
+    runs-on: ubuntu-latest
+    steps:
 
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4
-  #     with:
-  #       fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
-  #   - name: SonarQube Cloud Scan
-  #     uses: SonarSource/sonarqube-scan-action@v5
-  #     env:
-  #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: SonarQube Cloud Scan
+      uses: SonarSource/sonarqube-scan-action@v5
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   snyk_sca_scan:
     name: snyk_sca_scan
@@ -81,26 +81,26 @@ jobs:
         name: snyk-sca-report
         path: snyk-sca-report.json         
 
-  # build:
-  #   name: Build and deploy to EC2
-  #   runs-on: ubuntu-latest
-  #   # environment: dev
-  #   # needs: test
-  #   steps:
+  build:
+    name: Build and deploy to EC2
+    runs-on: ubuntu-latest
+    # environment: dev
+    needs: [test, sonarqube, snyk_sca_scan]
+    steps:
 
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-  #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v4
-  #       with:
-  #           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #           aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ env.AWS_REGION }}
 
-  #     - name: Login to Amazon ECR
-  #       id: login-ecr
-  #       uses: aws-actions/amazon-ecr-login@v2
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
   #     - name: Build, tag, and push image to Amazon ECR
   #       id: build-image
