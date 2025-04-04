@@ -102,7 +102,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build image
         id: build-image
         env:
             ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -130,7 +130,7 @@ jobs:
       #     severity: "HIGH,CRITICAL"
       #     scanners: "vuln"
 
-      - name: Fail build on High/Criticial Vulnerabilities
+      - name: Run Trivy image scan
         uses: aquasecurity/trivy-action@0.30.0
         with:
           scan-type: image
@@ -141,35 +141,46 @@ jobs:
           ignore-unfixed: true
           exit-code: 1
 
+      - name: Upload Report as Artifact
+        uses: actions/upload-artifact@v4.6.1
+        if: always()
+        with:
+          name: trivy-imagescan
+          path: trivy-imagescan.json
 
+      - name: Push image to Amazon ECR
+        run: |
+              # push it to ECR so that it can
+              # be deployed to EC2.
+              docker push ${{ steps.build-image.outputs.image }}
 
           # docker push $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
-          # # echo "$ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          # echo "$ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
           # echo "image=$ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
  
-  #     - name: Set up SSH key
-  #       run: |
-  #         echo "${{ secrets.SSH_KEY }}" > deploy_key.pem
-  #         chmod 400 deploy_key.pem
+      - name: Set up SSH key
+        run: |
+          echo "${{ secrets.SSH_KEY }}" > deploy_key.pem
+          chmod 400 deploy_key.pem
           
-  #     - name: Connect to EC2 & Deploy Docker Image
-  #       run: |
+      - name: Connect to EC2 and deploy docker image
+        run: |
           
-  #         ssh -o StrictHostKeyChecking=no -i deploy_key.pem ubuntu@${{ secrets.EC2_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i deploy_key.pem ubuntu@${{ secrets.EC2_IP }} << 'EOF'
             
-  #           # Configure AWS Credentials
-  #           sudo aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #           sudo aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #           sudo aws configure set region ${{ env.AWS_REGION }}
+            # Configure AWS Credentials
+            sudo aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+            sudo aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            sudo aws configure set region ${{ env.AWS_REGION }}
           
-  #           # login to ECR
-  #           sudo aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
+            # login to ECR
+            sudo aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
             
-  #           # Stop running docker (if any)
-  #           sudo docker ps -aq | xargs -r sudo docker stop
-  #           sudo docker ps -aq | xargs -r sudo docker rm
+            # Stop running docker (if any)
+            sudo docker ps -aq | xargs -r sudo docker stop
+            sudo docker ps -aq | xargs -r sudo docker rm
 
-  #           #Run new docker image
-  #           sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
-  #         EOF
+            #Run new docker image
+            sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
+          EOF
           
