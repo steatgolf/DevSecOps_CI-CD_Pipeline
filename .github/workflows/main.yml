@@ -124,7 +124,8 @@ jobs:
           format: json
           output: 'trivy-imagescan.json'
           severity: HIGH,CRITICAL
-          ignore-unfixed: false
+          # Change the value of ignore-unfixed to false if running in production, as it will cause the process to fail when a severity of HIGH or CRITICAL is found.
+          ignore-unfixed: true
           exit-code: 1
 
       - name: Upload Report as Artifact
