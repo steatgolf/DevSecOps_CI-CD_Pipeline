@@ -126,7 +126,7 @@ jobs:
           severity: HIGH,CRITICAL
           # Change the value of ignore-unfixed to false if running in production, as it will cause the process to fail when a severity of HIGH or CRITICAL is found.
           ignore-unfixed: true
-          # exit-code: 1
+          exit-code: 1
 
       - name: Upload Report as Artifact
         uses: actions/upload-artifact@v4.6.1
@@ -147,9 +147,9 @@ jobs:
 
               INSTANCE_ID="${{ secrets.EC2_INSTANCE_ID }}"  # Replace with your EC2 instance ID
               COMMANDS="
-                sudo docker ps -aq | xargs -r sudo docker stop
-                sudo docker ps -aq | xargs -r sudo docker rm
-                sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
+                sudo docker ps -aq | xargs -r sudo docker stop || true; 
+                sudo docker ps -aq | xargs -r sudo docker rm || true; 
+                sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }} || true; 
               "
               aws ssm send-command \
                 --instance-ids $INSTANCE_ID \
@@ -201,7 +201,7 @@ jobs:
           cmd_options: -a
           allow_issue_writing: false
           # fail_action: true = fail the job if medium or high risk level are found.
-          fail_action: false
+          fail_action: true
           artifact_name: zap-dast-report.json
           
       - name: Upload Report as Artifact
