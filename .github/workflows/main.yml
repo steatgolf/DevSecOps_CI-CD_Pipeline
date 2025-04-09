@@ -12,80 +12,80 @@ env:
 
 jobs:
 
-  # test:
-  #   name: fastapi_unit_test
-  #   runs-on: ubuntu-latest
+  test:
+    name: fastapi_unit_test
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     - name: Install make
-  #       run: sudo apt-get update && sudo apt-get install -y make
+      - name: Install make
+        run: sudo apt-get update && sudo apt-get install -y make
 
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v5.4.0
-  #       with:
-  #         python-version: 3.13
+      - name: Set up Python
+        uses: actions/setup-python@v5.4.0
+        with:
+          python-version: 3.13
 
-  #     - name: Install dependencies
-  #       run: pip install -r src/requirements.txt 
+      - name: Install dependencies
+        run: pip install -r src/requirements.txt 
 
-  #     - name: Run Pytest with make
-  #       run: make test
+      - name: Run Pytest with make
+        run: make test
 
-  # sonarqube:
-  #   name: sonarcloud_sast_scan
-  #   runs-on: ubuntu-latest
-  #   steps:
+  sonarqube:
+    name: sonarcloud_sast_scan
+    runs-on: ubuntu-latest
+    steps:
 
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4
-  #     with:
-  #       fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
-  #   - name: SonarQube Cloud Scan
-  #     uses: SonarSource/sonarqube-scan-action@v5.1.0
-  #     env:
-  #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: SonarQube Cloud Scan
+      uses: SonarSource/sonarqube-scan-action@v5.1.0
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  # snyk_sca_scan:
-  #   name: snyk_sca_scan
-  #   runs-on: ubuntu-latest
-  #   steps:
+  snyk_sca_scan:
+    name: snyk_sca_scan
+    runs-on: ubuntu-latest
+    steps:
           
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v5.4.0
-  #     with:
-  #       python-version: 3.13
+    - name: Set up Python
+      uses: actions/setup-python@v5.4.0
+      with:
+        python-version: 3.13
 
-  #   - name: Install dependencies
-  #     run: pip install -r src/requirements.txt
+    - name: Install dependencies
+      run: pip install -r src/requirements.txt
               
-  #   - name: Install Snyk CLI
-  #     run: npm install -g snyk
+    - name: Install Snyk CLI
+      run: npm install -g snyk
 
-  #   - name: Authenticate Snyk
-  #     run: snyk auth ${{ secrets.SNYK_TOKEN }}
+    - name: Authenticate Snyk
+      run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
-  #   - name: Run Snyk Test
-  #     run: snyk test --file=src/requirements.txt --severity-threshold=high --json > snyk-sca-report.json || true
+    - name: Run Snyk Test
+      run: snyk test --file=src/requirements.txt --severity-threshold=high --json > snyk-sca-report.json || true
 
-  #   - name: Upload Report as Artifact
-  #     uses: actions/upload-artifact@v4.6.1
-  #     if: always()
-  #     with:
-  #       name: snyk-sca-report
-  #       path: snyk-sca-report.json         
+    - name: Upload Report as Artifact
+      uses: actions/upload-artifact@v4.6.1
+      if: always()
+      with:
+        name: snyk-sca-report
+        path: snyk-sca-report.json         
 
   build:
     name: build_imagescan_push_deploy_ec2
     runs-on: ubuntu-latest
     # environment: dev
-    # needs: [test, sonarqube, snyk_sca_scan]
+    needs: [test, sonarqube, snyk_sca_scan]
     steps:
 
       - name: Checkout Repository
@@ -141,7 +141,7 @@ jobs:
               # be deployed to EC2.
               docker push ${{ steps.build-image.outputs.image }}
 
-      - name: Connect to EC2 and deploy docker image with SSM
+      - name: Connect to EC2 and deploy docker image with SSM (Deploy without SSH access)
         run: |
               # SSM Command #
 

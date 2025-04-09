@@ -21,11 +21,10 @@ resource "aws_instance" "vm1" {
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.public-subnet-1a.id
   vpc_security_group_ids = [
-    aws_security_group.ssh.id,
+    # aws_security_group.ssh.id,
     aws_security_group.http.id
   ]
   user_data_base64     = base64encode(file("${path.module}/script/ubuntu_provision.sh"))
   iam_instance_profile = aws_iam_instance_profile.ec2_ssm_instance_profile.name
-  # depends_on = [aws_iam_instance_profile.ec2_ssm_instance_profile.name]
 }
 
