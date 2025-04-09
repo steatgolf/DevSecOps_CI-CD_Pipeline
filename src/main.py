@@ -6,7 +6,7 @@ app = FastAPI()
 # Define a simple route
 @app.get("/")
 def read_root():
-    return {"message": "FastApi Version 7.0"}
+    return {"message": "FastApi Version 1.0"}
 
 # Define another route with a path parameter
 @app.get("/greet/{name}")
