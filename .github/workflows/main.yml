@@ -148,7 +148,8 @@ jobs:
               INSTANCE_ID="${{ secrets.EC2_INSTANCE_ID }}"  # Replace with your EC2 instance ID
               COMMANDS="
                 # Login to ECR is not required, as I'm using an EC2 instance role with attached SSM and ECR access policies. #
-                
+                sudo aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com || true; 
+
                 # Stop and remove existing docker image #
                 sudo docker ps -aq | xargs -r sudo docker stop || true; 
                 sudo docker ps -aq | xargs -r sudo docker rm || true;
