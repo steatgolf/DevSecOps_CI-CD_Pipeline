@@ -24,11 +24,8 @@ resource "aws_instance" "vm1" {
     aws_security_group.ssh.id,
     aws_security_group.http.id
   ]
-  user_data_base64 = base64encode(file("${path.module}/script/ubuntu_provision.sh"))
-
-  # tags = {
-  #   Name = "FastApi-${local.environment_name}"
-  # }
-
+  user_data_base64     = base64encode(file("${path.module}/script/ubuntu_provision.sh"))
+  iam_instance_profile = aws_iam_instance_profile.ec2_ssm_instance_profile.name
+  # depends_on = [aws_iam_instance_profile.ec2_ssm_instance_profile.name]
 }
 

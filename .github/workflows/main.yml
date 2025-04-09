@@ -141,31 +141,47 @@ jobs:
               # be deployed to EC2.
               docker push ${{ steps.build-image.outputs.image }}
 
-      - name: Set up SSH key
+      - name: Connect to EC2 and deploy docker image with SSM ()
         run: |
-          echo "${{ secrets.SSH_KEY }}" > deploy_key.pem
-          chmod 400 deploy_key.pem
-          
-      - name: Connect to EC2 and deploy docker image
-        run: |
-          
-          ssh -o StrictHostKeyChecking=no -i deploy_key.pem ubuntu@${{ secrets.EC2_IP }} << 'EOF'
-            
-            # Configure AWS Credentials
-            sudo aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-            sudo aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            sudo aws configure set region ${{ env.AWS_REGION }}
-          
-            # login to ECR
-            sudo aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
-            
-            # Stop running docker (if any)
-            sudo docker ps -aq | xargs -r sudo docker stop
-            sudo docker ps -aq | xargs -r sudo docker rm
+              # SSM Command #
 
-            #Run new docker image
-            sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
-          EOF
+              INSTANCE_ID="${{ secrets.EC2_INSTANCE_ID }}"  # Replace with your EC2 instance ID
+              COMMANDS="
+                sudo docker ps -aq | xargs -r sudo docker stop
+                sudo docker ps -aq | xargs -r sudo docker rm
+                sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
+              "
+              aws ssm send-command \
+                --instance-ids $INSTANCE_ID \
+                --document-name "AWS-RunShellScript" \
+                --parameters 'commands=["'"$COMMANDS"'"]' \
+                --comment "Stopping and removing the existing image and run new image on EC2"    
+
+      # - name: Set up SSH key
+      #   run: |
+      #     echo "${{ secrets.SSH_KEY }}" > deploy_key.pem
+      #     chmod 400 deploy_key.pem
+          
+      # - name: Connect to EC2 and deploy docker image with SSH
+      #   run: |
+          
+      #     ssh -o StrictHostKeyChecking=no -i deploy_key.pem ubuntu@${{ secrets.EC2_IP }} << 'EOF'
+            
+      #       # Configure AWS Credentials
+      #       sudo aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #       sudo aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #       sudo aws configure set region ${{ env.AWS_REGION }}
+          
+      #       # login to ECR
+      #       sudo aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 941377147642.dkr.ecr.us-east-1.amazonaws.com
+            
+      #       # Stop running docker (if any)
+      #       sudo docker ps -aq | xargs -r sudo docker stop
+      #       sudo docker ps -aq | xargs -r sudo docker rm
+
+      #       #Run new docker image
+      #       sudo docker run -d -p 80:8000 ${{ steps.build-image.outputs.image }}
+      #     EOF
           
   DAST:
     name: zap_dast_scan
