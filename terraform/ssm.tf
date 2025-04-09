@@ -22,22 +22,23 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm" {
 }
 
 resource "aws_iam_policy" "ec2_ecr" {
-  name = "ec2_ecr" 
+  name   = "ec2_ecr"
   policy = <<POLICY
 {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ecr:*"
-        ],
-        "Resource": "*"
-		  }
-	  ]
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"ecr:*"
+			],
+			"Resource": "*"
+		}
+	]
 }
 POLICY
 }
+
 
 resource "aws_iam_role_policy_attachment" "ec2_ecr" {
   role       = aws_iam_role.ec2_ssm.name
