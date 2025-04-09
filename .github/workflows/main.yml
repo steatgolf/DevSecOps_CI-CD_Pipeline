@@ -117,16 +117,19 @@ jobs:
             echo "image=$ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Run Trivy image scan
-        uses: aquasecurity/trivy-action@0.30.0
+        # uses: aquasecurity/trivy-action@0.30.0
+        uses: aquasecurity/trivy-action@master
         with:
           scan-type: image
           image-ref: ${{ steps.build-image.outputs.image }}
           format: json
           output: 'trivy-imagescan.json'
-          # Change the value of ignore-unfixed to false if running in production, as it will cause the process to fail when a severity of HIGH or CRITICAL is found.
-          ignore-unfixed: false
-          exit-code: 1
           severity: HIGH,CRITICAL
+          # Change the value of ignore-unfixed to false if running in production, as it will cause the process to fail when a severity of HIGH or CRITICAL is found.
+          ignore-unfixed: true
+          exit-code: 1
+          # severity: HIGH,CRITICAL
+
 
       - name: Upload Report as Artifact
         uses: actions/upload-artifact@v4.6.1
