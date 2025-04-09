@@ -40,14 +40,6 @@ variable "ecr_name" {
   default     = "fastapi"
 }
 
-variable "subnet_public" {
-  description = "Input the network subnet"
-  type        = string
-  default     = "aws_subnet.public-subnet-1a"
-}
-
-
-
 
 # locals {
 #   environment_name = terraform.workspace
