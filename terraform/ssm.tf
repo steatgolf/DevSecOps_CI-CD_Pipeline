@@ -21,29 +21,36 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-resource "aws_iam_policy" "ec2_ecr" {
-  name   = "ec2_ecr"
-  policy = <<POLICY
-{
-	"Version": "2012-10-17",
-	"Statement": [
-		{
-			"Effect": "Allow",
-			"Action": [
-				"ecr:*"
-			],
-			"Resource": "*"
-		}
-	]
-}
-POLICY
-}
-
 
 resource "aws_iam_role_policy_attachment" "ec2_ecr" {
   role       = aws_iam_role.ec2_ssm.name
-  policy_arn = aws_iam_policy.ec2_ecr.arn
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
 }
+
+
+# resource "aws_iam_policy" "ec2_ecr" {
+#   name   = "ec2_ecr"
+#   policy = <<POLICY
+# {
+# 	"Version": "2012-10-17",
+# 	"Statement": [
+# 		{
+# 			"Effect": "Allow",
+# 			"Action": [
+# 				"ecr:*"
+# 			],
+# 			"Resource": "*"
+# 		}
+# 	]
+# }
+# POLICY
+# }
+
+
+# resource "aws_iam_role_policy_attachment" "ec2_ecr" {
+#   role       = aws_iam_role.ec2_ssm.name
+#   policy_arn = aws_iam_policy.ec2_ecr.arn
+# }
 
 
 resource "aws_iam_instance_profile" "ec2_ssm_instance_profile" {

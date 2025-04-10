@@ -1,5 +1,7 @@
 resource "aws_vpc" "main-vpc" {
-  cidr_block = "10.255.0.0/16"
+  cidr_block           = "10.255.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 }
 
 resource "aws_subnet" "public-subnet-1a" {
@@ -68,11 +70,11 @@ resource "aws_security_group" "http" {
   }
 }
 
-resource "aws_key_pair" "sshkey" {
-  key_name   = "aws"
-  public_key = file("~/.ssh/aws.pub")
+# resource "aws_key_pair" "sshkey" {
+#   key_name   = "aws"
+#   public_key = file("~/.ssh/aws.pub")
 
-}
+# }
 
 
 # resource "aws_eip" "ip1" {
