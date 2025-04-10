@@ -12,7 +12,7 @@ def test_read_root():
     assert response.status_code == 200
     
     # Assert the returned JSON is correct
-    assert response.json() == {"message": "FastApi Version 1.1"}
+    assert response.json() == {"message": "FastApi Version 1.2"}
 
 def test_greet():
     # Test the /greet/{name} endpoint with a dynamic name
