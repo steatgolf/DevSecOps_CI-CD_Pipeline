@@ -33,6 +33,3 @@ sudo apt-get install -y --no-install-recommends docker-ce docker-ce-cli containe
 
 # Enable and start docker service
 sudo systemctl enable --now docker
-
-#Run nginx for testing
-# sudo docker run -d -p 80:80 nginx

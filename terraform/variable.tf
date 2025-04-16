@@ -40,24 +40,8 @@ variable "ecr_name" {
   default     = "fastapi"
 }
 
-variable "vpc_id" {
-  type    = string
-  default = "aws_vpc.main-vpc.id"
-}
-
-variable "subnet_id" {
-  type    = string
-  default = "aws_subnet.public-subnet-1a.id"
-}
-
-
 variable "region" {
   type    = string
   default = "us-east-1"
 }
 
-
-
-# locals {
-#   environment_name = terraform.workspace
-# }

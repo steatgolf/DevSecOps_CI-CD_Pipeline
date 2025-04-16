@@ -28,6 +28,27 @@ resource "aws_route_table_association" "routetable" {
   route_table_id = aws_route_table.routetable.id
 }
 
+resource "aws_security_group" "http" {
+  name   = "allow-http"
+  vpc_id = aws_vpc.main-vpc.id
+
+  ingress {
+    # Use "0.0.0.0/0" Allow all IP for testing CI/CD #
+    cidr_blocks = ["0.0.0.0/0"]
+    # cidr_blocks = ["49.228.237.125/32"]
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+  }
+
+  egress {
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+  }
+}
+
 # resource "aws_security_group" "ssh" {
 #   name   = "allow-ssh"
 #   vpc_id = aws_vpc.main-vpc.id
@@ -49,26 +70,6 @@ resource "aws_route_table_association" "routetable" {
 #   }
 # }
 
-resource "aws_security_group" "http" {
-  name   = "allow-http"
-  vpc_id = aws_vpc.main-vpc.id
-
-  ingress {
-    # Use "0.0.0.0/0" Allow all IP for testing CI/CD #
-    cidr_blocks = ["0.0.0.0/0"]
-    # cidr_blocks = ["49.228.237.125/32"]
-    from_port = 80
-    to_port   = 80
-    protocol  = "tcp"
-  }
-
-  egress {
-    cidr_blocks = ["0.0.0.0/0"]
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-  }
-}
 
 # resource "aws_key_pair" "sshkey" {
 #   key_name   = "aws"
