@@ -88,25 +88,20 @@ The `.github/workflows/main.yml` file defines the automated pipeline triggered o
 
 Follow these steps to set up the infrastructure:
 
-1.  **Initialize Terraform**
+1.  **Provision Infrastructure (First time):**
+    * Navigate to `terraform/`.
+    * Run `terraform plan` to review the changes.
+    * Run `terraform apply` and confirm with `yes`.
+    * **Important:** Note the `EC2_INSTANCE_ID` and `EC2_IP`` outputs. Update the `EC2_INSTANCE_ID` and `EC2_IP` GitHub repository secrets with these values.
+    
     ```bash
     cd terraform
     terraform init
-    ```
-
-2.  **Plan Terraform Infrastructure**
-    ```bash
     terraform plan
-    ```
-    Review the output carefully to understand the resources that will be created.
-
-3.  **Apply Terraform Infrastructure**
-    ```bash
     terraform apply -auto-approve
     ```
-    This command will provision the necessary infrastructure on AWS Cloud Infrastructure.
 
-4.  **Configure repository secrets**
+2.  **Configure repository secrets**
 
     * `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` (AWS User account requires AmazonEC2ContainerRegistryFullAccess and AmazonSSMFullAccess policy)
 
@@ -119,22 +114,26 @@ Follow these steps to set up the infrastructure:
     * `SNYK_TOKEN` for SNYK SCA scan
 
 
-5.  **Test Github action CI/CD pipeline**
+3.  **Test Github action CI/CD pipeline**
 
-    Modify "FastApi Version x.x" main.yaml and test_main.py to change the version number. commit change to github repository that trigger the CI/CD pipeline to run. 
+    * To manually trigger and test the full pipeline:
+        * Make a minor, non-breaking change in the application code (e.g., update a version string or a comment in `main.py` or `test_main.py`).
+        * Commit and push the change to the branch configured to trigger the workflow (e.g., `main`).
 
-    ```bash
-    git add .
-    git commit -m "Triggering CI/CD"
-    git push origin main
-    ```
+        ```bash
+        # Example change made, now commit and push
+        git add .
+        git commit -m "Test: Trigger CI/CD pipeline"
+        git push origin main
+        ```
+    * Monitor the pipeline execution in the GitHub Actions tab.
 
 6.  **Test external access**
 
-    Test fastapi with `curl` command.
+    Test FastApi with `curl` command.
 
     ```bash
-    curl <EC2 public ip address>
+    curl -v <EC2 public ip address>
     ```
 10.  **Clean up**
 
