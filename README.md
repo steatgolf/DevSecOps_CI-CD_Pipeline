@@ -121,65 +121,23 @@ Follow these steps to set up the infrastructure:
 
 5.  **Test Github action CI/CD pipeline**
 
-    Run the setup script located in the `kubernetes/script` directory.
-    ```bash
-    git commit --allow-empty -m "Triggering remote action"
-    
-    ```
-
-6.  **Verify kubernetes resource in webapp namespace**
-
-    Ensure the application components (Deployments, Services, Pods) are running.
-    ```bash
-    kubectl get all -n webapp
-    ```
-
-7.  **Test external access via Nginx ingress**
-
-    Retrieve the AWS Load Balancer hostname or IP.
-    ```bash
-    kubectl descripe ingress -n webapp
-    ```
-    Test routing with `curl` using the appropriate host headers. `host = web.example.com` (Route to nginx service port 80)
-    ```bash
-    curl -i --header "Host: web.example.com" http://<loadbalance name or ip address>
-    ```
-
-    Test routing with `curl` using the appropriate host headers. `host = dev.web.example.com` (Route to nginx service port 80)
-    ```bash
-    curl -i --header "Host: dev.web.example.com" http://<loadbalance name or ip address>
-    ```
-8.  **Access ArgoCD application**
-
-    Retrieve the Argo CD admin password from kubernetes secrets.
+    Modify "FastApi Version x.x" main.yaml and test_main.py to change the version number. commit change to github repository that trigger the CI/CD pipeline to run. 
 
     ```bash
-    kubectl get secrets argocd-initial-admin-secret -o yaml -n argocd
+    git add .
+    git commit -m "Triggering CI/CD"
+    git push origin main
     ```
 
-    Decode the password.
+6.  **Test external access**
+
+    Test fastapi with `curl` command.
+
     ```bash
-    echo "<password before decode>" | base64 --decode
+    curl <EC2 public ip address>
     ```
-
-    Port-forward to access the Argo CD UI.
-    ```bash
-    kubectl port-forward svc/argocd-server -n argocd 8080:80
-    ```
-    Access Argo CD at http://localhost:8080 and login using the username `admin` and the `decoded password`.
-
-9.  **Test ArgoCD application**
-
-    Modify deployment.yaml to change the number of replicas from 1 to 2. Wait a few minutes or manually trigger a sync in the Argo CD UI. You should see the number of nginx pods in `service name nginx` increase accordingly.
-
 10.  **Clean up**
 
-    Delete kubernetes webapp namespace.
-
-     ```bash
-    kubectl delete ns webapp
-    terraform init
-    ```
     Destroy the Terraform-managed infrastructure.
 
     ```bash
