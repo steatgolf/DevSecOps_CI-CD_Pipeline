@@ -6,7 +6,7 @@ This project demonstrates a secure CI/CD pipeline for a FastAPI application depl
 
 The goal of this project is to establish a robust and secure workflow for developing, testing, scanning, and deploying a FastAPI application.
 
-* **Infrastructure as Code (IaC):** Terraform is used to define and manage AWS resources (VPC, Subnets, Security Groups, EC2, ECR).
+* **Infrastructure as Code (IaC):** Terraform is used to define and manage AWS resources.
 * **CI/CD Automation:** GitHub Actions orchestrates the entire process from code commit to deployment.
 * **DevSecOps Integration:** Security checks are embedded throughout the pipeline:
     * **SAST:** SonarQube analyzes static code for vulnerabilities.
@@ -18,7 +18,7 @@ The goal of this project is to establish a robust and secure workflow for develo
 
 ## 1. Infrastructure Provisioning (Terraform)
 
-Terraform (within a `terraform/` directory) is responsible for creating the necessary AWS infrastructure:
+Terraform (within a `terraform` directory) is responsible for creating the necessary AWS infrastructure:
 
 * **Networking:** VPC, Public Subnets, Internet Gateway, Route Tables.
 * **Compute:** EC2 Instance with an appropriate IAM Role allowing SSM access and ECR pull permissions.
@@ -34,32 +34,31 @@ Terraform create AWS resources and the primary deployment mechanism is handled b
 After the EC2 instance is created by Terraform, a `user_data` script name `ubuntu_provision.sh` is used to provision the instance with necessary software:
 
 * **Docker Engine:** To run the containerized FastAPI application.
-* **AWS CLI:** To interact with AWS services if needed (though SSM reduces direct CLI dependency for deployment).
+* **AWS CLI:** To interact with AWS services.
 
 *Note:* Using SSM Agent (pre-installed on most recent AMIs) and Run Command for deployment is preferred over SSH-based provisioning for enhanced security. Ensure the EC2 instance's IAM role has the `AmazonSSMManagedInstanceCore` policy attached.
 
 ## 3. CI/CD Pipeline (GitHub Actions)
 
-The `.github/workflows/main.yml` file defines the automated pipeline triggered on pushes or pull requests to the main branch.
+The `.github/workflows/main.yml` file defines the automated pipeline triggered on pushes requests to the main branch.
 
-**Pipeline Stages:**
+**Pipeline Stages**
 
-1.  **Checkout Code:** Checks out the repository code.
+1.  **Checkout Code** Checks out the repository code.
 
-2.  **Set up Python:** Configures the Python environment.
+2.  **Set up Python** Configures the Python environment.
 
 3.  **Run Unit Tests:**
     * Installs Python dependencies (`requirements.txt`).
     * Executes FastAPI unit tests using `pytest`.
-    * `pytest tests/`
 
 4.  **SonarQube SAST Scan:**
     * Integrates with SonarQube (Cloud) to perform Static Application Security Testing.
-    * Requires SonarQube token, and project key configured as GitHub Secrets.
+    * Requires SonarQube token as a GitHub repository secrets.
 
 5.  **Snyk SCA Scan:**
     * Scans project dependencies (`requirements.txt`) for known vulnerabilities using Snyk.
-    * Requires `SNYK_TOKEN` configured as a GitHub Secret.
+    * Requires `SNYK_TOKEN` configured as a GitHub repository secrets.
     * Uploads `snyk_report.json` as a build artifact.
 
 6.  **Build Docker Image:**
@@ -74,7 +73,6 @@ The `.github/workflows/main.yml` file defines the automated pipeline triggered o
     * Tags and push the Docker image to AWS ECR.
 
 9.  **Deploy to EC2 via SSM:**
-    * Uses the AWS CLI (configured with credentials) to trigger an SSM Run Command on the target EC2 instance(s).
     * Stop and remove existing docker image.
     * Run new docker image.
 
@@ -88,7 +86,7 @@ The `.github/workflows/main.yml` file defines the automated pipeline triggered o
 
 Follow these steps to set up the infrastructure:
 
-1.  **Provision Infrastructure (First time):**
+1.  **Provision Infrastructure**
     * Navigate to `terraform/`.
     * Run `terraform plan` to review the changes.
     * Run `terraform apply` and confirm with `yes`.
@@ -103,16 +101,15 @@ Follow these steps to set up the infrastructure:
 
 2.  **Configure repository secrets**
 
-    * `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` (AWS User account requires AmazonEC2ContainerRegistryFullAccess and AmazonSSMFullAccess policy)
+    * `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`: The associated IAM user/role needs `AmazonEC2ContainerRegistryFullAccess` and `AmazonSSMFullAccess` policies
 
-    * `EC2_INSTANCE_ID` for SSM service (Retrieve from terraform output)
+    * `EC2_INSTANCE_ID`: The ID of the EC2 for SSM service. Retrieve this from the `terraform output` after applying the configuration and add it as a secret.
 
-    * `EC2_IP` for ZAP DAST scan (Retrieve from terraform output)
+    * `EC2_IP`: The Public IP address of the EC2 instance. Retrieve this from `terraform output` after applying and add it as a secret. Used for the ZAP scan target.
 
-    * `SONAR_TOKEN` for SonarCloud SAST scan
+    * `SONAR_TOKEN`: SonarCloud access token for SAST scans.
 
-    * `SNYK_TOKEN` for SNYK SCA scan
-
+    * `SNYK_TOKEN`: Snyk API token for SCA scans.
 
 3.  **Test Github action CI/CD pipeline**
 
