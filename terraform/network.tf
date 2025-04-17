@@ -49,6 +49,8 @@ resource "aws_security_group" "http" {
   }
 }
 
+## Uncomment aws_security_group.ssh and aws_key_pair to enable SSH access for deployment instead of using SSM ##
+
 # resource "aws_security_group" "ssh" {
 #   name   = "allow-ssh"
 #   vpc_id = aws_vpc.main-vpc.id
