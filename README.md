@@ -134,9 +134,7 @@ Follow these steps to set up the infrastructure:
     ```
 10.  **Clean up**
 
-    Destroy terraform infrastructure.
-
     ```bash
     cd terraform
-    terraform destroy -auto-approve
+    terraform apply -auto-approve
     ```
