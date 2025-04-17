@@ -125,16 +125,19 @@ Follow these steps to set up the infrastructure:
         ```
     * Monitor the pipeline execution in the GitHub Actions tab.
 
-6.  **Test external access**
+4.  **Test external access**
 
     Test FastApi with `curl` command.
 
     ```bash
     curl -v <EC2 public ip address>
     ```
-10.  **Clean up**
+
+5.  **Clean up**
+
+    Destroy terraform resources.
 
     ```bash
     cd terraform
-    terraform apply -auto-approve
+    terraform destroy -auto-approve
     ```
