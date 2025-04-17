@@ -136,6 +136,7 @@ Follow these steps to set up the infrastructure:
 
     Destroy the Terraform-managed infrastructure.
 
+
     ```bash
     cd terraform
     terraform destroy -auto-approve
