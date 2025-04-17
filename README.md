@@ -134,8 +134,7 @@ Follow these steps to set up the infrastructure:
     ```
 10.  **Clean up**
 
-    Destroy the Terraform-managed infrastructure.
-
+    Destroy terraform infrastructure.
 
     ```bash
     cd terraform
