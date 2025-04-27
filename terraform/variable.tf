@@ -1,3 +1,9 @@
+locals {
+  env   = "dev"
+  zone1 = "us-east-1a"
+  zone2 = "us-east-1b"
+}
+
 variable "ami_name" {
   description = "The name of the AMI to use for the VM, default is the latest Ubuntu 24 AMI"
   type        = string
@@ -45,3 +51,7 @@ variable "region" {
   default = "us-east-1"
 }
 
+variable "ebs_device_name" {
+  type    = string
+  default = "/dev/xvdb"
+}

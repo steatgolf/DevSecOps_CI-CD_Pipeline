@@ -4,17 +4,22 @@ resource "aws_vpc" "main-vpc" {
   enable_dns_hostnames = true
 }
 
-resource "aws_subnet" "public-subnet-1a" {
+resource "aws_subnet" "public-zone1" {
   vpc_id            = aws_vpc.main-vpc.id
   cidr_block        = "10.255.1.0/24"
-  availability_zone = "us-east-1a"
+  availability_zone = local.zone1
+
+  tags = {
+    "Name" = "${local.env}-public-${local.zone1}"
+  }
 }
+
 
 resource "aws_internet_gateway" "gateway" {
   vpc_id = aws_vpc.main-vpc.id
 }
 
-resource "aws_route_table" "routetable" {
+resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main-vpc.id
 
   route {
@@ -24,8 +29,8 @@ resource "aws_route_table" "routetable" {
 }
 
 resource "aws_route_table_association" "routetable" {
-  subnet_id      = aws_subnet.public-subnet-1a.id
-  route_table_id = aws_route_table.routetable.id
+  subnet_id      = aws_subnet.public-zone1.id
+  route_table_id = aws_route_table.public.id
 }
 
 resource "aws_security_group" "http" {
@@ -80,8 +85,34 @@ resource "aws_security_group" "http" {
 # }
 
 
-# resource "aws_eip" "ip1" {
-#   domain   = "vpc"
-#   instance = aws_instance.vm1.id
-#   # depends_on = [aws_internet_gateway.gateway]
+# resource "aws_eip" "nat" {
+#   domain = "vpc"
+
+#   tags = {
+#     Name = "${local.env}-nat"
+#   }
+# }
+
+# resource "aws_nat_gateway" "nat" {
+#   allocation_id = aws_eip.nat.id
+#   subnet_id     = aws_subnet.public-zone1.id
+
+#   tags = {
+#     Name = "${local.env}-nat"
+#   }
+
+#   depends_on = [aws_internet_gateway.gateway]
+# }
+
+# resource "aws_route_table" "private" {
+#   vpc_id = aws_vpc.main.id
+
+#   route {
+#     cidr_block     = "0.0.0.0/0"
+#     nat_gateway_id = aws_nat_gateway.nat.id
+#   }
+
+#   tags = {
+#     Name = "${local.env}-private"
+#   }
 # }

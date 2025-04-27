@@ -9,10 +9,10 @@ terraform {
 
   # backend "s3" {
   #   bucket                   = "steat-sj-terraform-tfstate"
-  #   key                      = "production/terraform.tfstate"
+  #   key                      = "tfstate/terraform.tfstate"
   #   region                   = "us-east-1"
   #   shared_credentials_files = ["~/.aws/credentials"]
-  #   profile                  = "terraform-sa"
+  #   # profile                  = "terraform-sa"
   #   use_lockfile             = true
   #   encrypt                  = true
   # }
