@@ -21,8 +21,13 @@ resource "aws_instance" "vm1" {
   # Uncomment key_name to enable SSH access
   # key_name                    = aws_key_pair.sshkey.key_name
   associate_public_ip_address = true
-
   subnet_id = aws_subnet.public-zone1.id
+
+  root_block_device {
+    volume_size = 10
+    volume_type = "gp3"
+  }
+
   vpc_security_group_ids = [
     # Uncomment aws_security_group.ssh.id to enable SSH access for deployment instead of using SSM
     # aws_security_group.ssh.id,
@@ -44,7 +49,7 @@ resource "aws_instance" "vm1" {
 
 resource "aws_ebs_volume" "vm1" {
   availability_zone = local.zone1
-  size              = 20
+  size              = 10
   type              = "gp3"
 
   tags = {

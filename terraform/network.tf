@@ -14,7 +14,6 @@ resource "aws_subnet" "public-zone1" {
   }
 }
 
-
 resource "aws_internet_gateway" "gateway" {
   vpc_id = aws_vpc.main-vpc.id
 }
